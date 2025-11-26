@@ -171,7 +171,11 @@ python -m yandex_mcp
 
 ### Проверка через MCP Inspector
 ```bash
+# Если установлен как пакет
 npx @modelcontextprotocol/inspector yandex-mcp
+
+# Или напрямую из папки проекта
+npx @modelcontextprotocol/inspector python yandex_mcp.py
 ```
 
 ### Cursor IDE
