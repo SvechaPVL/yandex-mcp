@@ -43,13 +43,14 @@ def register(mcp: FastMCP) -> None:
             request_params = {
                 "SelectionCriteria": selection_criteria,
                 "FieldNames": ["Id", "Name", "CampaignId", "RegionIds", "Type", "Status", "ServingStatus"],
+                "UnifiedAdGroupFieldNames": ["OfferRetargeting"],
                 "Page": {
                     "Limit": params.limit,
                     "Offset": params.offset
                 }
             }
 
-            result = await api_client.direct_request("adgroups", "get", request_params)
+            result = await api_client.direct_request("adgroups", "get", request_params, use_v501=True)
             groups = result.get("result", {}).get("AdGroups", [])
 
             if params.response_format == ResponseFormat.JSON:
