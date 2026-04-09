@@ -125,9 +125,9 @@ class AppMetricaReportInput(BaseModel):
         description="Maximum number of rows to return",
     )
     offset: int = Field(
-        default=0,
-        ge=0,
-        description="Offset for pagination",
+        default=1,
+        ge=1,
+        description="Offset for pagination (1-based)",
     )
     response_format: ResponseFormat = Field(
         default=ResponseFormat.MARKDOWN,
