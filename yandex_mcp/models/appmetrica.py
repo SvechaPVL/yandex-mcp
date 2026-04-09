@@ -76,17 +76,28 @@ class AppMetricaReportInput(BaseModel):
         ...,
         min_length=1,
         description=(
-            "Comma-separated metric identifiers. "
-            "Prefixes: ym:ge: (general), ym:ce: (events), ym:c: (clicks), "
-            "ym:i: (installs), ym:s: (sessions). "
+            "Metric identifiers. All must share the same prefix. "
+            "ym:ge: — users, sessions. "
+            "ym:ce: — users. "
+            "ym:i: — users, devices, installDevices. "
+            "ym:cr: — users, crashes, crashDevices. "
+            "ym:s: — users. ym:u: — users, devices. ym:p: — users, devices. "
             "Example: ['ym:ge:users', 'ym:ge:sessions']"
         ),
     )
     dimensions: Optional[List[str]] = Field(
         default=None,
         description=(
-            "Dimension identifiers for grouping. "
-            "Example: ['ym:ge:mobileDeviceBranding', 'ym:ge:operatingSystemInfo']"
+            "Dimension identifiers for grouping (same prefix as metrics). "
+            "ym:ge: — date, regionCountry, regionCity, operatingSystemInfo, "
+            "mobileDeviceBranding, mobileDeviceModel, appVersion, gender, "
+            "ageInterval, screenResolution. "
+            "ym:ce: — eventLabel, eventType. "
+            "ym:i: — date, regionCountry, operatingSystemInfo, "
+            "mobileDeviceBranding, appVersion, publisher. "
+            "ym:cr: — date, operatingSystemInfo, appVersion, "
+            "crashGroupName, mobileDeviceBranding. "
+            "ym:s: — date, regionCountry, operatingSystemInfo."
         ),
     )
     date1: Optional[str] = Field(

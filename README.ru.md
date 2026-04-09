@@ -38,7 +38,7 @@ MCP (Model Context Protocol) сервер для **Yandex Direct**, **Yandex Met
 ### Yandex AppMetrica API (12 инструментов)
 - **Приложения** — список и детали мобильных приложений
 - **Отчёты** — табличная аналитика, временные ряды, drill-down
-- **События** — статистика событий с количеством пользователей
+- **События** — статистика событий с количеством уникальных пользователей
 - **Крэши** — аналитика крэшей с группировкой по типу, ОС, версии
 - **Профили** — экспорт профилей пользователей с данными устройств
 - **Воронки** — построение конверсионных воронок по цепочке событий
@@ -411,7 +411,7 @@ YANDEX_TOKEN=ваш_oauth_токен
 
 | Инструмент | Описание |
 |------------|----------|
-| `appmetrica_get_events` | Получить список событий с количеством пользователей |
+| `appmetrica_get_events` | Получить список событий с количеством уникальных пользователей |
 
 #### Крэши (1)
 
@@ -489,6 +489,32 @@ YANDEX_TOKEN=ваш_oauth_токен
 Экспортируй логи крэшей приложения 12345 за январь 2025
 ```
 
+### Справочник метрик и измерений AppMetrica
+
+Все метрики и измерения в одном запросе должны иметь одинаковый префикс.
+
+#### Метрики
+
+| Префикс | Область | Метрики |
+|----------|---------|---------|
+| `ym:ge:` | Общие | `users`, `sessions` |
+| `ym:ce:` | События | `users` |
+| `ym:i:` | Установки | `users`, `devices`, `installDevices` |
+| `ym:cr:` | Крэши | `users`, `crashes`, `crashDevices` |
+| `ym:s:` | Сессии | `users` |
+| `ym:u:` | Удаления | `users`, `devices` |
+| `ym:p:` | Push | `users`, `devices` |
+
+#### Измерения
+
+| Префикс | Измерения |
+|----------|-----------|
+| `ym:ge:` | `date`, `regionCountry`, `regionCity`, `operatingSystemInfo`, `mobileDeviceBranding`, `mobileDeviceModel`, `appVersion`, `gender`, `ageInterval`, `screenResolution` |
+| `ym:ce:` | `eventLabel`, `eventType` |
+| `ym:i:` | `date`, `regionCountry`, `operatingSystemInfo`, `mobileDeviceBranding`, `appVersion`, `publisher` |
+| `ym:cr:` | `date`, `operatingSystemInfo`, `appVersion`, `crashGroupName`, `mobileDeviceBranding` |
+| `ym:s:` | `date`, `regionCountry`, `operatingSystemInfo` |
+
 ## Альтернативные способы запуска
 
 ### Напрямую
@@ -543,9 +569,13 @@ yandex_mcp/
     │   ├── reports.py
     │   └── ...
     ├── wordstat.py      # 5 инструментов Yandex Wordstat
-    └── appmetrica/      # 8 инструментов Yandex AppMetrica
+    └── appmetrica/      # 12 инструментов Yandex AppMetrica
         ├── applications.py
         ├── reports.py
+        ├── events.py
+        ├── crashes.py
+        ├── profiles.py
+        ├── funnel.py
         ├── logs.py
         └── push.py
 ```

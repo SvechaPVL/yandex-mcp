@@ -37,19 +37,25 @@ def register(mcp: FastMCP) -> None:
         Retrieves app analytics with customizable metrics and dimensions.
         All metrics/dimensions in one request must share the same prefix.
 
-        Common metrics:
-        - ym:ge:users - Number of users
-        - ym:ge:sessions - Number of sessions
-        - ym:ge:newUsers - New users
-        - ym:ge:activeUsers - Active users (DAU)
+        Available metrics by prefix:
+        - ym:ge: (general) — users, sessions
+        - ym:ce: (events) — users
+        - ym:i: (installs) — users, devices, installDevices
+        - ym:cr: (crashes) — users, crashes, crashDevices
+        - ym:s: (sessions) — users
+        - ym:u: (uninstalls) — users, devices
+        - ym:p: (push) — users, devices
 
-        Common dimensions:
-        - ym:ge:date - Date
-        - ym:ge:mobileDeviceBranding - Device manufacturer
-        - ym:ge:mobileDeviceModel - Device model
-        - ym:ge:operatingSystemInfo - OS version
-        - ym:ge:regionCountry - Country
-        - ym:ge:regionCity - City
+        Dimensions by prefix:
+        - ym:ge: — date, regionCountry, regionCity, operatingSystemInfo,
+          mobileDeviceBranding, mobileDeviceModel, appVersion, gender,
+          ageInterval, screenResolution
+        - ym:ce: — eventLabel, eventType
+        - ym:i: — date, regionCountry, operatingSystemInfo,
+          mobileDeviceBranding, appVersion, publisher
+        - ym:cr: — date, operatingSystemInfo, appVersion,
+          crashGroupName, mobileDeviceBranding
+        - ym:s: — date, regionCountry, operatingSystemInfo
         """
         try:
             query_params: dict[str, object] = {

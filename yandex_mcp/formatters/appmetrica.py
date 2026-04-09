@@ -155,15 +155,14 @@ def format_appmetrica_events_markdown(data: Dict[str, Any]) -> str:
         lines.append("No events found.")
         return "\n".join(lines)
 
-    lines.append("| Event | Users | Event Count |")
-    lines.append("| --- | ---: | ---: |")
+    lines.append("| Event | Users |")
+    lines.append("| --- | ---: |")
     for row in rows[:100]:
         dims = row.get("dimensions", [])
-        metrics = row.get("metrics", [0, 0])
+        metrics = row.get("metrics", [0])
         event_name = dims[0].get("name", "N/A") if dims and isinstance(dims[0], dict) else "N/A"
         users = metrics[0] if len(metrics) > 0 else 0
-        count = metrics[1] if len(metrics) > 1 else 0
-        lines.append(f"| {event_name} | {users:,.0f} | {count:,.0f} |")
+        lines.append(f"| {event_name} | {users:,.0f} |")
 
     if len(rows) > 100:
         lines.append(f"\n*...and {len(rows) - 100} more events*")

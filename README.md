@@ -38,7 +38,7 @@ MCP (Model Context Protocol) server for **Yandex Direct**, **Yandex Metrika**, *
 ### Yandex AppMetrica API (12 tools)
 - **Applications** — list and view mobile app details
 - **Reports** — table, time-series, and drilldown analytics
-- **Events** — event statistics with user and event counts
+- **Events** — event statistics with unique user counts
 - **Crashes** — crash analytics grouped by type, OS, app version
 - **Profiles** — export user profiles with device and location data
 - **Funnels** — build conversion funnels from event sequences
@@ -411,7 +411,7 @@ Add to your MCP client settings:
 
 | Tool | Description |
 |------|-------------|
-| `appmetrica_get_events` | Get event list with user and event counts |
+| `appmetrica_get_events` | Get event list with unique user counts |
 
 #### Crashes (1)
 
@@ -489,6 +489,32 @@ How many users and sessions in app 12345 for the last week?
 Export crash logs for app 12345 from 2025-01-01 to 2025-01-31
 ```
 
+### AppMetrica Reporting API Reference
+
+All metrics and dimensions in one request must share the same prefix.
+
+#### Metrics
+
+| Prefix | Area | Metrics |
+|--------|------|---------|
+| `ym:ge:` | General | `users`, `sessions` |
+| `ym:ce:` | Events | `users` |
+| `ym:i:` | Installs | `users`, `devices`, `installDevices` |
+| `ym:cr:` | Crashes | `users`, `crashes`, `crashDevices` |
+| `ym:s:` | Sessions | `users` |
+| `ym:u:` | Uninstalls | `users`, `devices` |
+| `ym:p:` | Push | `users`, `devices` |
+
+#### Dimensions
+
+| Prefix | Dimensions |
+|--------|------------|
+| `ym:ge:` | `date`, `regionCountry`, `regionCity`, `operatingSystemInfo`, `mobileDeviceBranding`, `mobileDeviceModel`, `appVersion`, `gender`, `ageInterval`, `screenResolution` |
+| `ym:ce:` | `eventLabel`, `eventType` |
+| `ym:i:` | `date`, `regionCountry`, `operatingSystemInfo`, `mobileDeviceBranding`, `appVersion`, `publisher` |
+| `ym:cr:` | `date`, `operatingSystemInfo`, `appVersion`, `crashGroupName`, `mobileDeviceBranding` |
+| `ym:s:` | `date`, `regionCountry`, `operatingSystemInfo` |
+
 ## Alternative Run Methods
 
 ### Direct execution
@@ -543,9 +569,13 @@ yandex_mcp/
     │   ├── reports.py
     │   └── ...
     ├── wordstat.py      # 5 Yandex Wordstat tools
-    └── appmetrica/      # 8 Yandex AppMetrica tools
+    └── appmetrica/      # 12 Yandex AppMetrica tools
         ├── applications.py
         ├── reports.py
+        ├── events.py
+        ├── crashes.py
+        ├── profiles.py
+        ├── funnel.py
         ├── logs.py
         └── push.py
 ```

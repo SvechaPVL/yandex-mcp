@@ -9,10 +9,19 @@ def handle_api_error(e: Exception) -> str:
         status = e.response.status_code
         try:
             error_body = e.response.json()
-            error_msg = error_body.get("error", {}).get("error_string", "")
-            error_detail = error_body.get("error", {}).get("error_detail", "")
-            if error_msg:
+            # Yandex Direct format: {"error": {"error_string": ..., "error_detail": ...}}
+            error_obj = error_body.get("error", {})
+            if isinstance(error_obj, dict) and error_obj.get("error_string"):
+                error_msg = error_obj["error_string"]
+                error_detail = error_obj.get("error_detail", "")
                 return f"API Error ({status}): {error_msg}. {error_detail}".strip()
+            # AppMetrica format: {"errors": [{"error_type": ..., "message": ...}], "message": ...}
+            if "errors" in error_body:
+                messages = [err.get("message", "") for err in error_body["errors"]]
+                return f"API Error ({status}): {'; '.join(messages)}"
+            # Fallback: top-level message
+            if "message" in error_body:
+                return f"API Error ({status}): {error_body['message']}"
         except Exception:
             pass
 

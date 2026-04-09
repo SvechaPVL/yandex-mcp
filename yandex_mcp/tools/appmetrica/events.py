@@ -33,7 +33,7 @@ def register(mcp: FastMCP) -> None:
         try:
             query_params: dict[str, object] = {
                 "id": params.app_id,
-                "metrics": "ym:ce:users,ym:ce:eventCount",
+                "metrics": "ym:ce:users",
                 "dimensions": "ym:ce:eventLabel",
                 "sort": "-ym:ce:users",
                 "limit": params.limit,
