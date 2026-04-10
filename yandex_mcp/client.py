@@ -85,7 +85,17 @@ class YandexAPIClient:
         async with httpx.AsyncClient(timeout=req_timeout) as client:
             response = await client.post(url, json=payload, headers=headers)
             response.raise_for_status()
-            return response.json()
+            data = response.json()
+
+            # Direct API может вернуть ошибку внутри HTTP 200
+            if "error" in data and "result" not in data:
+                err = data["error"]
+                code = err.get("error_code", "?")
+                msg = err.get("error_string", "Unknown error")
+                detail = err.get("error_detail", "")
+                raise ValueError(f"Direct API error {code}: {msg}. {detail}".strip())
+
+            return data
 
     async def metrika_request(
         self,
