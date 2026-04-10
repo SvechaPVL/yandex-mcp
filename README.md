@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![MCP](https://img.shields.io/badge/MCP-compatible-green.svg)](https://modelcontextprotocol.io/)
 
-MCP (Model Context Protocol) server for **Yandex Direct**, **Yandex Metrika**, and **Yandex Wordstat** APIs. Provides **128 tools** for managing advertising campaigns, analytics, keyword research, and reporting through any MCP-compatible client.
+MCP (Model Context Protocol) server for **Yandex Direct**, **Yandex Metrika**, **Yandex Wordstat**, and **Yandex AppMetrica** APIs. Provides **140 tools** for managing advertising campaigns, analytics, keyword research, mobile app analytics, and reporting through any MCP-compatible client.
 
 > Manage Yandex advertising and analytics through AI
 
@@ -34,6 +34,16 @@ MCP (Model Context Protocol) server for **Yandex Direct**, **Yandex Metrika**, a
 - **Regions** — regional distribution of search queries
 - **Regions Tree** — hierarchical region structure
 - **User Info** — API quota and usage limits
+
+### Yandex AppMetrica API (12 tools)
+- **Applications** — list and view mobile app details
+- **Reports** — table, time-series, and drilldown analytics
+- **Events** — event statistics with unique user counts
+- **Crashes** — crash analytics grouped by type, OS, app version
+- **Profiles** — export user profiles with device and location data
+- **Funnels** — build conversion funnels from event sequences
+- **Logs API** — export raw data (events, crashes, installs, revenue, etc.)
+- **Push API** — create push groups and check sending status
 
 ### Yandex Metrika API (43 tools)
 - **Counters** — create, configure, delete tracking counters
@@ -66,7 +76,7 @@ Create a `.env` file:
 YANDEX_TOKEN=your_oauth_token_here
 ```
 
-Get a token from [Yandex OAuth](https://oauth.yandex.ru/) with permissions for Direct and Metrika APIs (`direct:api`, `metrika:read`, `metrika:write`).
+Get a token from [Yandex OAuth](https://oauth.yandex.ru/) with permissions for the APIs you need (`direct:api`, `metrika:read`, `metrika:write`, `appmetrica:read`).
 
 ### 3. Configure your MCP client
 
@@ -102,10 +112,11 @@ Add to your MCP client settings:
 | `YANDEX_TOKEN` | Yes | Yandex OAuth token (used for both Direct and Metrika) |
 | `YANDEX_DIRECT_TOKEN` | No | Separate token for Direct API |
 | `YANDEX_METRIKA_TOKEN` | No | Separate token for Metrika API |
+| `YANDEX_APPMETRICA_TOKEN` | No | Separate token for AppMetrica API |
 | `YANDEX_CLIENT_LOGIN` | No | Client login for agency accounts |
 | `YANDEX_USE_SANDBOX` | No | Set to `true` for sandbox API |
 
-## Tools (128)
+## Tools (140)
 
 ### Yandex Direct (80 tools)
 
@@ -379,6 +390,60 @@ Add to your MCP client settings:
 | `wordstat_regions_tree` | Get full hierarchical regions tree with IDs |
 | `wordstat_user_info` | Get API quota and usage limits |
 
+### Yandex AppMetrica (12 tools)
+
+#### Applications (2)
+
+| Tool | Description |
+|------|-------------|
+| `appmetrica_get_applications` | List all AppMetrica applications |
+| `appmetrica_get_application` | Get details of a specific application |
+
+#### Reports (3)
+
+| Tool | Description |
+|------|-------------|
+| `appmetrica_get_report` | Get analytics report with custom metrics and dimensions |
+| `appmetrica_get_report_by_time` | Get time-series report (daily, weekly, monthly) |
+| `appmetrica_get_drilldown_report` | Get hierarchical drill-down report |
+
+#### Events (1)
+
+| Tool | Description |
+|------|-------------|
+| `appmetrica_get_events` | Get event list with unique user counts |
+
+#### Crashes (1)
+
+| Tool | Description |
+|------|-------------|
+| `appmetrica_get_crashes` | Get crash statistics grouped by type, OS, app version |
+
+#### Profiles (1)
+
+| Tool | Description |
+|------|-------------|
+| `appmetrica_get_profiles` | Export user profiles with device and location data |
+
+#### Funnels (1)
+
+| Tool | Description |
+|------|-------------|
+| `appmetrica_get_funnel` | Build conversion funnel from event sequence |
+
+#### Logs API (1)
+
+| Tool | Description |
+|------|-------------|
+| `appmetrica_export_logs` | Export raw data (clicks, installs, events, crashes, revenue, etc.) |
+
+#### Push API (2)
+
+| Tool | Description |
+|------|-------------|
+| `appmetrica_create_push_group` | Create a push notification group |
+| `appmetrica_get_push_status` | Check push sending status |
+
 ## Usage Examples
 
 ### Campaign management
@@ -417,6 +482,39 @@ Query dynamics for "electric car" over the last year
 Regional distribution for "auto from japan"
 ```
 
+### Mobile app analytics (AppMetrica)
+```
+Show all my apps in AppMetrica
+How many users and sessions in app 12345 for the last week?
+Export crash logs for app 12345 from 2025-01-01 to 2025-01-31
+```
+
+### AppMetrica Reporting API Reference
+
+All metrics and dimensions in one request must share the same prefix.
+
+#### Metrics
+
+| Prefix | Area | Metrics |
+|--------|------|---------|
+| `ym:ge:` | General | `users`, `sessions` |
+| `ym:ce:` | Events | `users` |
+| `ym:i:` | Installs | `users`, `devices`, `installDevices` |
+| `ym:cr:` | Crashes | `users`, `crashes`, `crashDevices` |
+| `ym:s:` | Sessions | `users` |
+| `ym:u:` | Uninstalls | `users`, `devices` |
+| `ym:p:` | Push | `users`, `devices` |
+
+#### Dimensions
+
+| Prefix | Dimensions |
+|--------|------------|
+| `ym:ge:` | `date`, `regionCountry`, `regionCity`, `operatingSystemInfo`, `mobileDeviceBranding`, `mobileDeviceModel`, `appVersion`, `gender`, `ageInterval`, `screenResolution` |
+| `ym:ce:` | `eventLabel`, `eventType` |
+| `ym:i:` | `date`, `regionCountry`, `operatingSystemInfo`, `mobileDeviceBranding`, `appVersion`, `publisher` |
+| `ym:cr:` | `date`, `operatingSystemInfo`, `appVersion`, `crashGroupName`, `mobileDeviceBranding` |
+| `ym:s:` | `date`, `regionCountry`, `operatingSystemInfo` |
+
 ## Alternative Run Methods
 
 ### Direct execution
@@ -439,7 +537,7 @@ Add to Cursor MCP settings in the same format as above.
 ```
 yandex_mcp/
 ├── __init__.py          # MCP server init and tool registration
-├── client.py            # Async HTTP client for Direct, Metrika & Wordstat APIs
+├── client.py            # Async HTTP client for Direct, Metrika, Wordstat & AppMetrica APIs
 ├── config.py            # Configuration and environment variables
 ├── utils.py             # Error handling utilities
 ├── models/              # Pydantic input models
@@ -448,11 +546,13 @@ yandex_mcp/
 │   ├── direct_extended.py
 │   ├── metrika.py
 │   ├── metrika_extended.py
-│   └── wordstat.py
+│   ├── wordstat.py
+│   └── appmetrica.py
 ├── formatters/          # Markdown output formatters
 │   ├── direct.py
 │   ├── metrika.py
-│   └── wordstat.py
+│   ├── wordstat.py
+│   └── appmetrica.py
 └── tools/               # MCP tool definitions
     ├── direct/          # 80 Yandex Direct tools
     │   ├── _helpers.py  # Shared manage-operation factory
@@ -468,7 +568,16 @@ yandex_mcp/
     │   ├── goals.py
     │   ├── reports.py
     │   └── ...
-    └── wordstat.py      # 5 Yandex Wordstat tools
+    ├── wordstat.py      # 5 Yandex Wordstat tools
+    └── appmetrica/      # 12 Yandex AppMetrica tools
+        ├── applications.py
+        ├── reports.py
+        ├── events.py
+        ├── crashes.py
+        ├── profiles.py
+        ├── funnel.py
+        ├── logs.py
+        └── push.py
 ```
 
 ## Development
@@ -498,6 +607,7 @@ pytest
 
 - [Yandex Direct API docs](https://yandex.ru/dev/direct/doc/dg/concepts/about.html)
 - [Yandex Metrika API docs](https://yandex.ru/dev/metrika/doc/api2/concept/about.html)
+- [Yandex AppMetrica API docs](https://appmetrica.yandex.com/docs/en/mobile-api/)
 - [Model Context Protocol](https://modelcontextprotocol.io/)
 
 ## License

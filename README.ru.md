@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![MCP](https://img.shields.io/badge/MCP-compatible-green.svg)](https://modelcontextprotocol.io/)
 
-MCP (Model Context Protocol) сервер для **Yandex Direct**, **Yandex Metrika** и **Yandex Wordstat** API. Предоставляет **128 инструментов** для управления рекламными кампаниями, аналитикой, исследованием ключевых слов и отчётностью через любой MCP-совместимый клиент.
+MCP (Model Context Protocol) сервер для **Yandex Direct**, **Yandex Metrika**, **Yandex Wordstat** и **Yandex AppMetrica** API. Предоставляет **140 инструментов** для управления рекламными кампаниями, аналитикой, исследованием ключевых слов, мобильной аналитикой и отчётностью через любой MCP-совместимый клиент.
 
 > Управляй рекламой и аналитикой Яндекса через AI
 
@@ -34,6 +34,16 @@ MCP (Model Context Protocol) сервер для **Yandex Direct**, **Yandex Met
 - **Регионы** — региональное распределение поисковых запросов
 - **Дерево регионов** — иерархическая структура регионов
 - **Информация о пользователе** — квота и лимиты API
+
+### Yandex AppMetrica API (12 инструментов)
+- **Приложения** — список и детали мобильных приложений
+- **Отчёты** — табличная аналитика, временные ряды, drill-down
+- **События** — статистика событий с количеством уникальных пользователей
+- **Крэши** — аналитика крэшей с группировкой по типу, ОС, версии
+- **Профили** — экспорт профилей пользователей с данными устройств
+- **Воронки** — построение конверсионных воронок по цепочке событий
+- **Logs API** — экспорт сырых данных (события, крэши, установки, доход и т.д.)
+- **Push API** — создание push-групп и проверка статуса рассылок
 
 ### Yandex Metrika API (43 инструмента)
 - **Счётчики** — создание, настройка, удаление
@@ -66,7 +76,7 @@ pip install -e .
 YANDEX_TOKEN=ваш_oauth_токен
 ```
 
-Получите токен на [Yandex OAuth](https://oauth.yandex.ru/) с правами `direct:api`, `metrika:read`, `metrika:write`.
+Получите токен на [Yandex OAuth](https://oauth.yandex.ru/) с правами для нужных API (`direct:api`, `metrika:read`, `metrika:write`, `appmetrica:read`).
 
 ### 3. Настройка MCP-клиента
 
@@ -102,10 +112,11 @@ YANDEX_TOKEN=ваш_oauth_токен
 | `YANDEX_TOKEN` | Да | OAuth-токен Яндекса (используется для Direct и Metrika) |
 | `YANDEX_DIRECT_TOKEN` | Нет | Отдельный токен для Direct API |
 | `YANDEX_METRIKA_TOKEN` | Нет | Отдельный токен для Metrika API |
+| `YANDEX_APPMETRICA_TOKEN` | Нет | Отдельный токен для AppMetrica API |
 | `YANDEX_CLIENT_LOGIN` | Нет | Логин клиента для агентских аккаунтов |
 | `YANDEX_USE_SANDBOX` | Нет | `true` для использования песочницы |
 
-## Инструменты (128)
+## Инструменты (140)
 
 ### Yandex Direct (80 инструментов)
 
@@ -379,6 +390,60 @@ YANDEX_TOKEN=ваш_oauth_токен
 | `wordstat_regions_tree` | Получить полное дерево регионов с ID |
 | `wordstat_user_info` | Получить квоту и лимиты API |
 
+### Yandex AppMetrica (12 инструментов)
+
+#### Приложения (2)
+
+| Инструмент | Описание |
+|------------|----------|
+| `appmetrica_get_applications` | Получить список приложений AppMetrica |
+| `appmetrica_get_application` | Получить детали конкретного приложения |
+
+#### Отчёты (3)
+
+| Инструмент | Описание |
+|------------|----------|
+| `appmetrica_get_report` | Получить отчёт с метриками и измерениями |
+| `appmetrica_get_report_by_time` | Отчёт по времени (день, неделя, месяц) |
+| `appmetrica_get_drilldown_report` | Иерархический drill-down отчёт |
+
+#### События (1)
+
+| Инструмент | Описание |
+|------------|----------|
+| `appmetrica_get_events` | Получить список событий с количеством уникальных пользователей |
+
+#### Крэши (1)
+
+| Инструмент | Описание |
+|------------|----------|
+| `appmetrica_get_crashes` | Статистика крэшей с группировкой по типу, ОС, версии |
+
+#### Профили (1)
+
+| Инструмент | Описание |
+|------------|----------|
+| `appmetrica_get_profiles` | Экспорт профилей пользователей с данными устройств |
+
+#### Воронки (1)
+
+| Инструмент | Описание |
+|------------|----------|
+| `appmetrica_get_funnel` | Построить конверсионную воронку по цепочке событий |
+
+#### Logs API (1)
+
+| Инструмент | Описание |
+|------------|----------|
+| `appmetrica_export_logs` | Экспорт сырых данных (клики, установки, события, крэши, доход и т.д.) |
+
+#### Push API (2)
+
+| Инструмент | Описание |
+|------------|----------|
+| `appmetrica_create_push_group` | Создать группу push-уведомлений |
+| `appmetrica_get_push_status` | Проверить статус push-рассылки |
+
 ## Примеры использования
 
 ### Управление кампаниями
@@ -417,6 +482,39 @@ YANDEX_TOKEN=ваш_oauth_токен
 Региональное распределение запроса "авто из японии"
 ```
 
+### Мобильная аналитика (AppMetrica)
+```
+Покажи все мои приложения в AppMetrica
+Сколько пользователей и сессий в приложении 12345 за последнюю неделю?
+Экспортируй логи крэшей приложения 12345 за январь 2025
+```
+
+### Справочник метрик и измерений AppMetrica
+
+Все метрики и измерения в одном запросе должны иметь одинаковый префикс.
+
+#### Метрики
+
+| Префикс | Область | Метрики |
+|----------|---------|---------|
+| `ym:ge:` | Общие | `users`, `sessions` |
+| `ym:ce:` | События | `users` |
+| `ym:i:` | Установки | `users`, `devices`, `installDevices` |
+| `ym:cr:` | Крэши | `users`, `crashes`, `crashDevices` |
+| `ym:s:` | Сессии | `users` |
+| `ym:u:` | Удаления | `users`, `devices` |
+| `ym:p:` | Push | `users`, `devices` |
+
+#### Измерения
+
+| Префикс | Измерения |
+|----------|-----------|
+| `ym:ge:` | `date`, `regionCountry`, `regionCity`, `operatingSystemInfo`, `mobileDeviceBranding`, `mobileDeviceModel`, `appVersion`, `gender`, `ageInterval`, `screenResolution` |
+| `ym:ce:` | `eventLabel`, `eventType` |
+| `ym:i:` | `date`, `regionCountry`, `operatingSystemInfo`, `mobileDeviceBranding`, `appVersion`, `publisher` |
+| `ym:cr:` | `date`, `operatingSystemInfo`, `appVersion`, `crashGroupName`, `mobileDeviceBranding` |
+| `ym:s:` | `date`, `regionCountry`, `operatingSystemInfo` |
+
 ## Альтернативные способы запуска
 
 ### Напрямую
@@ -439,7 +537,7 @@ npx @modelcontextprotocol/inspector python -m yandex_mcp
 ```
 yandex_mcp/
 ├── __init__.py          # Инициализация MCP-сервера и регистрация инструментов
-├── client.py            # Async HTTP-клиент для Direct, Metrika и Wordstat API
+├── client.py            # Async HTTP-клиент для Direct, Metrika, Wordstat и AppMetrica API
 ├── config.py            # Конфигурация и переменные окружения
 ├── utils.py             # Утилиты обработки ошибок
 ├── models/              # Pydantic-модели входных данных
@@ -448,11 +546,13 @@ yandex_mcp/
 │   ├── direct_extended.py
 │   ├── metrika.py
 │   ├── metrika_extended.py
-│   └── wordstat.py
+│   ├── wordstat.py
+│   └── appmetrica.py
 ├── formatters/          # Форматирование вывода в Markdown
 │   ├── direct.py
 │   ├── metrika.py
-│   └── wordstat.py
+│   ├── wordstat.py
+│   └── appmetrica.py
 └── tools/               # Определения MCP-инструментов
     ├── direct/          # 80 инструментов Yandex Direct
     │   ├── _helpers.py  # Фабрика для manage-операций
@@ -468,7 +568,16 @@ yandex_mcp/
     │   ├── goals.py
     │   ├── reports.py
     │   └── ...
-    └── wordstat.py      # 5 инструментов Yandex Wordstat
+    ├── wordstat.py      # 5 инструментов Yandex Wordstat
+    └── appmetrica/      # 12 инструментов Yandex AppMetrica
+        ├── applications.py
+        ├── reports.py
+        ├── events.py
+        ├── crashes.py
+        ├── profiles.py
+        ├── funnel.py
+        ├── logs.py
+        └── push.py
 ```
 
 ## Разработка
@@ -498,6 +607,7 @@ pytest
 
 - [Документация Yandex Direct API](https://yandex.ru/dev/direct/doc/dg/concepts/about.html)
 - [Документация Yandex Metrika API](https://yandex.ru/dev/metrika/doc/api2/concept/about.html)
+- [Документация Yandex AppMetrica API](https://appmetrica.yandex.com/docs/en/mobile-api/)
 - [Model Context Protocol](https://modelcontextprotocol.io/)
 
 ## Лицензия

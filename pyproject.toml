@@ -1,14 +1,14 @@
 [project]
 name = "yandex-mcp"
 version = "1.1.0"
-description = "MCP server for Yandex Direct and Yandex Metrika APIs"
+description = "MCP server for Yandex Direct, Metrika, Wordstat and AppMetrica APIs"
 readme = "README.md"
 license = {text = "MIT"}
 authors = [
     {name = "Ekaterina", email = "13k1333@gmail.com"}
 ]
 requires-python = ">=3.10"
-keywords = ["mcp", "yandex", "direct", "metrika", "advertising", "analytics"]
+keywords = ["mcp", "yandex", "direct", "metrika", "wordstat", "appmetrica", "advertising", "analytics"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",

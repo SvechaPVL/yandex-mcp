@@ -7,6 +7,8 @@ import httpx
 
 from .config import (
     DEFAULT_TIMEOUT,
+    YANDEX_APPMETRICA_API_URL,
+    YANDEX_APPMETRICA_PUSH_API_URL,
     YANDEX_DIRECT_API_URL,
     YANDEX_DIRECT_API_URL_V501,
     YANDEX_DIRECT_SANDBOX_URL,
@@ -23,7 +25,12 @@ class YandexAPIClient:
         # Allow single token for both services
         self.unified_token = os.environ.get("YANDEX_TOKEN", "")
         self.client_login = os.environ.get("YANDEX_CLIENT_LOGIN", "")
+        self.appmetrica_token = os.environ.get("YANDEX_APPMETRICA_TOKEN", "")
         self.use_sandbox = os.environ.get("YANDEX_USE_SANDBOX", "false").lower() == "true"
+
+    def _get_appmetrica_token(self) -> str:
+        """Get token for AppMetrica API."""
+        return self.appmetrica_token or self.unified_token
 
     def _get_direct_token(self) -> str:
         """Get token for Direct API."""
@@ -78,7 +85,17 @@ class YandexAPIClient:
         async with httpx.AsyncClient(timeout=req_timeout) as client:
             response = await client.post(url, json=payload, headers=headers)
             response.raise_for_status()
-            return response.json()
+            data = response.json()
+
+            # Direct API может вернуть ошибку внутри HTTP 200
+            if "error" in data and "result" not in data:
+                err = data["error"]
+                code = err.get("error_code", "?")
+                msg = err.get("error_string", "Unknown error")
+                detail = err.get("error_detail", "")
+                raise ValueError(f"Direct API error {code}: {msg}. {detail}".strip())
+
+            return data
 
     async def metrika_request(
         self,
@@ -143,6 +160,50 @@ class YandexAPIClient:
         async with httpx.AsyncClient(timeout=DEFAULT_TIMEOUT) as client:
             response = await client.post(url, json=data or {}, headers=headers)
             response.raise_for_status()
+            return response.json()
+
+    async def appmetrica_request(
+        self,
+        endpoint: str,
+        method: str = "GET",
+        params: Optional[Dict[str, Any]] = None,
+        data: Optional[Dict[str, Any]] = None,
+        timeout: Optional[float] = None,
+        use_push_api: bool = False,
+    ) -> Dict[str, Any]:
+        """Make a request to Yandex AppMetrica API."""
+        token = self._get_appmetrica_token()
+        if not token:
+            raise ValueError(
+                "Yandex AppMetrica API token not configured. "
+                "Set YANDEX_APPMETRICA_TOKEN or YANDEX_TOKEN environment variable."
+            )
+
+        base_url = YANDEX_APPMETRICA_PUSH_API_URL if use_push_api else YANDEX_APPMETRICA_API_URL
+        url = f"{base_url}{endpoint}"
+        headers = {
+            "Authorization": f"OAuth {token}",
+            "Content-Type": "application/json",
+        }
+
+        req_timeout = timeout or DEFAULT_TIMEOUT
+        async with httpx.AsyncClient(timeout=req_timeout) as client:
+            if method == "GET":
+                response = await client.get(url, params=params, headers=headers)
+            elif method == "POST":
+                response = await client.post(url, json=data, params=params, headers=headers)
+            elif method == "PUT":
+                response = await client.put(url, json=data, params=params, headers=headers)
+            elif method == "DELETE":
+                response = await client.delete(url, params=params, headers=headers)
+            else:
+                raise ValueError(f"Unsupported HTTP method: {method}")
+
+            response.raise_for_status()
+
+            if response.status_code == 204:
+                return {"success": True}
+
             return response.json()
 
 
