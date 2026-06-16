@@ -300,3 +300,24 @@ class TestImports:
     def test_import_webmaster_formatters(self):
         from yandex_mcp.formatters.webmaster import format_webmaster_popular_queries_markdown
         assert callable(format_webmaster_popular_queries_markdown)
+
+
+class TestWebmasterValidation:
+    """host_id is interpolated into the API path, so it must be validated."""
+
+    def test_valid_host_id_accepted(self):
+        from yandex_mcp.models.webmaster import WebmasterHostSummaryInput
+        assert WebmasterHostSummaryInput(host_id="https:asiapk.ru:443").host_id == "https:asiapk.ru:443"
+
+    @pytest.mark.parametrize("bad", [
+        "../../../etc/passwd",
+        "https:asiapk.ru:443/../../user/123",
+        "https:asiapk.ru:443/summary",
+        "https:asiapk.ru:443?x=1",
+        "",
+    ])
+    def test_path_traversal_host_id_rejected(self, bad):
+        import pydantic
+        from yandex_mcp.models.webmaster import WebmasterPopularQueriesInput
+        with pytest.raises(pydantic.ValidationError):
+            WebmasterPopularQueriesInput(host_id=bad)

@@ -1,6 +1,8 @@
 """Yandex Webmaster API v4 tools."""
 
 import json
+from urllib.parse import quote
+
 from mcp.server.fastmcp import FastMCP
 
 from ..client import api_client
@@ -75,8 +77,9 @@ def register(mcp: FastMCP) -> None:
         """
         try:
             user_id = params.user_id or await api_client.webmaster_user_id()
+            host = quote(params.host_id, safe=":")
             result = await api_client.webmaster_request(
-                f"/user/{user_id}/hosts/{params.host_id}/summary/"
+                f"/user/{user_id}/hosts/{host}/summary/"
             )
 
             if params.response_format == ResponseFormat.JSON:
@@ -97,8 +100,9 @@ def register(mcp: FastMCP) -> None:
         """
         try:
             user_id = params.user_id or await api_client.webmaster_user_id()
+            host = quote(params.host_id, safe=":")
             result = await api_client.webmaster_request(
-                f"/user/{user_id}/hosts/{params.host_id}/search-queries/popular/",
+                f"/user/{user_id}/hosts/{host}/search-queries/popular/",
                 params={
                     "order_by": params.order_by,
                     "query_indicator": params.query_indicator,

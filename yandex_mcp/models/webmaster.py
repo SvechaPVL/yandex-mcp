@@ -1,8 +1,23 @@
 """Pydantic models for Yandex Webmaster API v4."""
 
+import re
 from typing import List, Optional
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from .common import ResponseFormat
+
+# Yandex Webmaster host IDs look like 'https:asiapk.ru:443'. Restricting the
+# value to this shape keeps it from breaking out of the URL path (no slashes,
+# no '..' segments) when it is interpolated into the API endpoint.
+_HOST_ID_RE = re.compile(r"^[a-z]+:[a-zA-Z0-9.\-]+(:\d+)?$")
+
+
+def _validate_host_id(value: str) -> str:
+    if not _HOST_ID_RE.fullmatch(value):
+        raise ValueError(
+            "Invalid host_id format. Expected e.g. 'https:asiapk.ru:443' "
+            "(see webmaster_get_hosts)."
+        )
+    return value
 
 
 class WebmasterUserIdInput(BaseModel):
@@ -36,6 +51,8 @@ class WebmasterHostSummaryInput(BaseModel):
         default=ResponseFormat.MARKDOWN, description="Output format: 'markdown' or 'json'"
     )
 
+    _check_host_id = field_validator("host_id")(_validate_host_id)
+
 
 class WebmasterPopularQueriesInput(BaseModel):
     """Input for getting popular search queries for a host."""
@@ -64,3 +81,5 @@ class WebmasterPopularQueriesInput(BaseModel):
     response_format: ResponseFormat = Field(
         default=ResponseFormat.MARKDOWN, description="Output format: 'markdown' or 'json'"
     )
+
+    _check_host_id = field_validator("host_id")(_validate_host_id)
