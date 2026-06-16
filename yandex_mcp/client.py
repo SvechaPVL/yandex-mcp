@@ -20,6 +20,7 @@ class YandexAPIClient:
     def __init__(self):
         self.direct_token = os.environ.get("YANDEX_DIRECT_TOKEN", "")
         self.metrika_token = os.environ.get("YANDEX_METRIKA_TOKEN", "")
+        self.webmaster_token = os.environ.get("YANDEX_WEBMASTER_TOKEN", "")
         # Allow single token for both services
         self.unified_token = os.environ.get("YANDEX_TOKEN", "")
         self.client_login = os.environ.get("YANDEX_CLIENT_LOGIN", "")
@@ -36,6 +37,10 @@ class YandexAPIClient:
     def _get_wordstat_token(self) -> str:
         """Get token for Wordstat API."""
         return self.direct_token or self.unified_token
+
+    def _get_webmaster_token(self) -> str:
+        """Get token for Webmaster API."""
+        return self.webmaster_token or self.unified_token
 
     def _get_direct_url(self, use_v501: bool = False) -> str:
         """Get Direct API URL based on configuration."""
@@ -144,6 +149,38 @@ class YandexAPIClient:
             response = await client.post(url, json=data or {}, headers=headers)
             response.raise_for_status()
             return response.json()
+
+    async def webmaster_request(
+        self,
+        endpoint: str,
+        params: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """Make a GET request to Yandex Webmaster API v4.
+
+        ``endpoint`` is the path after the API version, e.g.
+        ``/user/{user_id}/hosts/``. List values in ``params`` are encoded as
+        repeated query keys (required by the search-queries endpoints).
+        """
+        token = self._get_webmaster_token()
+        if not token:
+            raise ValueError(
+                "Yandex Webmaster API token not configured. "
+                "Set YANDEX_WEBMASTER_TOKEN or YANDEX_TOKEN environment variable."
+            )
+
+        from .config import YANDEX_WEBMASTER_API_URL
+        url = f"{YANDEX_WEBMASTER_API_URL}{endpoint}"
+        headers = {"Authorization": f"OAuth {token}"}
+
+        async with httpx.AsyncClient(timeout=DEFAULT_TIMEOUT) as client:
+            response = await client.get(url, params=params, headers=headers)
+            response.raise_for_status()
+            return response.json()
+
+    async def webmaster_user_id(self) -> int:
+        """Resolve the Webmaster UserID of the token owner."""
+        result = await self.webmaster_request("/user/")
+        return result["user_id"]
 
 
 # Global API client instance

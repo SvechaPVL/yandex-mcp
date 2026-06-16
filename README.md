@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![MCP](https://img.shields.io/badge/MCP-compatible-green.svg)](https://modelcontextprotocol.io/)
 
-MCP (Model Context Protocol) server for **Yandex Direct**, **Yandex Metrika**, and **Yandex Wordstat** APIs. Provides **128 tools** for managing advertising campaigns, analytics, keyword research, and reporting through any MCP-compatible client.
+MCP (Model Context Protocol) server for **Yandex Direct**, **Yandex Metrika**, **Yandex Wordstat**, and **Yandex Webmaster** APIs. Provides **132 tools** for managing advertising campaigns, analytics, keyword research, organic search, and reporting through any MCP-compatible client.
 
 > Manage Yandex advertising and analytics through AI
 
@@ -34,6 +34,12 @@ MCP (Model Context Protocol) server for **Yandex Direct**, **Yandex Metrika**, a
 - **Regions** — regional distribution of search queries
 - **Regions Tree** — hierarchical region structure
 - **User Info** — API quota and usage limits
+
+### Yandex Webmaster API v4 (4 tools)
+- **User ID** — resolve the token owner's Webmaster UserID
+- **Hosts** — list verified sites and their IDs
+- **Host Summary** — SQI, searchable and excluded page counts
+- **Popular Queries** — organic search queries with shows, clicks, and positions
 
 ### Yandex Metrika API (43 tools)
 - **Counters** — create, configure, delete tracking counters
@@ -105,7 +111,7 @@ Add to your MCP client settings:
 | `YANDEX_CLIENT_LOGIN` | No | Client login for agency accounts |
 | `YANDEX_USE_SANDBOX` | No | Set to `true` for sandbox API |
 
-## Tools (128)
+## Tools (132)
 
 ### Yandex Direct (80 tools)
 
@@ -379,6 +385,15 @@ Add to your MCP client settings:
 | `wordstat_regions_tree` | Get full hierarchical regions tree with IDs |
 | `wordstat_user_info` | Get API quota and usage limits |
 
+### Yandex Webmaster (4 tools)
+
+| Tool | Description |
+|------|-------------|
+| `webmaster_get_user_id` | Resolve the token owner's Webmaster UserID |
+| `webmaster_get_hosts` | List verified sites and their host IDs |
+| `webmaster_get_host_summary` | Get SQI, searchable and excluded page counts |
+| `webmaster_get_popular_queries` | Get organic search queries with shows, clicks, positions |
+
 ## Usage Examples
 
 ### Campaign management
@@ -439,7 +454,7 @@ Add to Cursor MCP settings in the same format as above.
 ```
 yandex_mcp/
 ├── __init__.py          # MCP server init and tool registration
-├── client.py            # Async HTTP client for Direct, Metrika & Wordstat APIs
+├── client.py            # Async HTTP client for Direct, Metrika, Wordstat & Webmaster APIs
 ├── config.py            # Configuration and environment variables
 ├── utils.py             # Error handling utilities
 ├── models/              # Pydantic input models
@@ -448,11 +463,13 @@ yandex_mcp/
 │   ├── direct_extended.py
 │   ├── metrika.py
 │   ├── metrika_extended.py
-│   └── wordstat.py
+│   ├── wordstat.py
+│   └── webmaster.py
 ├── formatters/          # Markdown output formatters
 │   ├── direct.py
 │   ├── metrika.py
-│   └── wordstat.py
+│   ├── wordstat.py
+│   └── webmaster.py
 └── tools/               # MCP tool definitions
     ├── direct/          # 80 Yandex Direct tools
     │   ├── _helpers.py  # Shared manage-operation factory
@@ -468,7 +485,8 @@ yandex_mcp/
     │   ├── goals.py
     │   ├── reports.py
     │   └── ...
-    └── wordstat.py      # 5 Yandex Wordstat tools
+    ├── wordstat.py      # 5 Yandex Wordstat tools
+    └── webmaster.py     # 4 Yandex Webmaster tools
 ```
 
 ## Development

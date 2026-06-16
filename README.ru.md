@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![MCP](https://img.shields.io/badge/MCP-compatible-green.svg)](https://modelcontextprotocol.io/)
 
-MCP (Model Context Protocol) сервер для **Yandex Direct**, **Yandex Metrika** и **Yandex Wordstat** API. Предоставляет **128 инструментов** для управления рекламными кампаниями, аналитикой, исследованием ключевых слов и отчётностью через любой MCP-совместимый клиент.
+MCP (Model Context Protocol) сервер для **Yandex Direct**, **Yandex Metrika**, **Yandex Wordstat** и **Yandex Webmaster** API. Предоставляет **132 инструмента** для управления рекламными кампаниями, аналитикой, исследованием ключевых слов, органическим поиском и отчётностью через любой MCP-совместимый клиент.
 
 > Управляй рекламой и аналитикой Яндекса через AI
 
@@ -34,6 +34,12 @@ MCP (Model Context Protocol) сервер для **Yandex Direct**, **Yandex Met
 - **Регионы** — региональное распределение поисковых запросов
 - **Дерево регионов** — иерархическая структура регионов
 - **Информация о пользователе** — квота и лимиты API
+
+### Yandex Webmaster API v4 (4 инструмента)
+- **UserID** — определение UserID владельца токена
+- **Сайты** — список подтверждённых сайтов и их ID
+- **Сводка по хосту** — ИКС (SQI), число страниц в поиске и исключённых
+- **Популярные запросы** — органические запросы с показами, кликами и позициями
 
 ### Yandex Metrika API (43 инструмента)
 - **Счётчики** — создание, настройка, удаление
@@ -105,7 +111,7 @@ YANDEX_TOKEN=ваш_oauth_токен
 | `YANDEX_CLIENT_LOGIN` | Нет | Логин клиента для агентских аккаунтов |
 | `YANDEX_USE_SANDBOX` | Нет | `true` для использования песочницы |
 
-## Инструменты (128)
+## Инструменты (132)
 
 ### Yandex Direct (80 инструментов)
 
@@ -379,6 +385,15 @@ YANDEX_TOKEN=ваш_oauth_токен
 | `wordstat_regions_tree` | Получить полное дерево регионов с ID |
 | `wordstat_user_info` | Получить квоту и лимиты API |
 
+### Yandex Webmaster (4 инструмента)
+
+| Инструмент | Описание |
+|------------|----------|
+| `webmaster_get_user_id` | Определить UserID владельца токена |
+| `webmaster_get_hosts` | Список подтверждённых сайтов и их host ID |
+| `webmaster_get_host_summary` | ИКС (SQI), число страниц в поиске и исключённых |
+| `webmaster_get_popular_queries` | Органические запросы с показами, кликами и позициями |
+
 ## Примеры использования
 
 ### Управление кампаниями
@@ -439,7 +454,7 @@ npx @modelcontextprotocol/inspector python -m yandex_mcp
 ```
 yandex_mcp/
 ├── __init__.py          # Инициализация MCP-сервера и регистрация инструментов
-├── client.py            # Async HTTP-клиент для Direct, Metrika и Wordstat API
+├── client.py            # Async HTTP-клиент для Direct, Metrika, Wordstat и Webmaster API
 ├── config.py            # Конфигурация и переменные окружения
 ├── utils.py             # Утилиты обработки ошибок
 ├── models/              # Pydantic-модели входных данных
@@ -448,11 +463,13 @@ yandex_mcp/
 │   ├── direct_extended.py
 │   ├── metrika.py
 │   ├── metrika_extended.py
-│   └── wordstat.py
+│   ├── wordstat.py
+│   └── webmaster.py
 ├── formatters/          # Форматирование вывода в Markdown
 │   ├── direct.py
 │   ├── metrika.py
-│   └── wordstat.py
+│   ├── wordstat.py
+│   └── webmaster.py
 └── tools/               # Определения MCP-инструментов
     ├── direct/          # 80 инструментов Yandex Direct
     │   ├── _helpers.py  # Фабрика для manage-операций
@@ -468,7 +485,8 @@ yandex_mcp/
     │   ├── goals.py
     │   ├── reports.py
     │   └── ...
-    └── wordstat.py      # 5 инструментов Yandex Wordstat
+    ├── wordstat.py      # 5 инструментов Yandex Wordstat
+    └── webmaster.py     # 4 инструмента Yandex Webmaster
 ```
 
 ## Разработка

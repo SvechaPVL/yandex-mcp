@@ -168,17 +168,30 @@ EXPECTED_WORDSTAT_TOOLS = [
     "wordstat_user_info",
 ]
 
+EXPECTED_WEBMASTER_TOOLS = [
+    "webmaster_get_user_id",
+    "webmaster_get_hosts",
+    "webmaster_get_host_summary",
+    "webmaster_get_popular_queries",
+]
+
 
 class TestToolRegistration:
     """Test that all tools are properly registered."""
 
     def test_total_tool_count(self, mcp_instance):
         tools = list(mcp_instance._tool_manager._tools.keys())
-        expected = len(EXPECTED_DIRECT_TOOLS) + len(EXPECTED_METRIKA_TOOLS) + len(EXPECTED_WORDSTAT_TOOLS)
+        all_expected = (
+            EXPECTED_DIRECT_TOOLS
+            + EXPECTED_METRIKA_TOOLS
+            + EXPECTED_WORDSTAT_TOOLS
+            + EXPECTED_WEBMASTER_TOOLS
+        )
+        expected = len(all_expected)
         assert len(tools) == expected, (
             f"Expected {expected} tools, got {len(tools)}. "
-            f"Missing: {set(EXPECTED_DIRECT_TOOLS + EXPECTED_METRIKA_TOOLS + EXPECTED_WORDSTAT_TOOLS) - set(tools)}. "
-            f"Extra: {set(tools) - set(EXPECTED_DIRECT_TOOLS + EXPECTED_METRIKA_TOOLS + EXPECTED_WORDSTAT_TOOLS)}"
+            f"Missing: {set(all_expected) - set(tools)}. "
+            f"Extra: {set(tools) - set(all_expected)}"
         )
 
     def test_direct_tool_count(self, mcp_instance):
@@ -193,6 +206,10 @@ class TestToolRegistration:
         tools = [t for t in mcp_instance._tool_manager._tools if t.startswith("wordstat_")]
         assert len(tools) == len(EXPECTED_WORDSTAT_TOOLS)
 
+    def test_webmaster_tool_count(self, mcp_instance):
+        tools = [t for t in mcp_instance._tool_manager._tools if t.startswith("webmaster_")]
+        assert len(tools) == len(EXPECTED_WEBMASTER_TOOLS)
+
     @pytest.mark.parametrize("tool_name", EXPECTED_DIRECT_TOOLS)
     def test_direct_tool_exists(self, mcp_instance, tool_name):
         assert tool_name in mcp_instance._tool_manager._tools, f"Missing Direct tool: {tool_name}"
@@ -204,6 +221,10 @@ class TestToolRegistration:
     @pytest.mark.parametrize("tool_name", EXPECTED_WORDSTAT_TOOLS)
     def test_wordstat_tool_exists(self, mcp_instance, tool_name):
         assert tool_name in mcp_instance._tool_manager._tools, f"Missing Wordstat tool: {tool_name}"
+
+    @pytest.mark.parametrize("tool_name", EXPECTED_WEBMASTER_TOOLS)
+    def test_webmaster_tool_exists(self, mcp_instance, tool_name):
+        assert tool_name in mcp_instance._tool_manager._tools, f"Missing Webmaster tool: {tool_name}"
 
 
 class TestToolNaming:
@@ -224,8 +245,13 @@ class TestToolNaming:
         for tool in wordstat_tools:
             assert tool.startswith("wordstat_"), f"Wordstat tool not properly prefixed: {tool}"
 
+    def test_all_webmaster_tools_prefixed(self, mcp_instance):
+        webmaster_tools = [t for t in mcp_instance._tool_manager._tools if t.startswith("webmaster_")]
+        for tool in webmaster_tools:
+            assert tool.startswith("webmaster_"), f"Webmaster tool not properly prefixed: {tool}"
+
     def test_no_unknown_prefixes(self, mcp_instance):
-        known_prefixes = ("direct_", "metrika_", "wordstat_")
+        known_prefixes = ("direct_", "metrika_", "wordstat_", "webmaster_")
         for tool in mcp_instance._tool_manager._tools:
             assert any(tool.startswith(p) for p in known_prefixes), f"Unknown prefix in tool: {tool}"
 
@@ -262,3 +288,15 @@ class TestImports:
     def test_import_formatters(self):
         from yandex_mcp.formatters.wordstat import format_wordstat_top_requests_markdown
         assert callable(format_wordstat_top_requests_markdown)
+
+    def test_import_webmaster_models(self):
+        from yandex_mcp.models.webmaster import (
+            WebmasterHostsInput,
+            WebmasterHostSummaryInput,
+            WebmasterPopularQueriesInput,
+        )
+        assert WebmasterPopularQueriesInput is not None
+
+    def test_import_webmaster_formatters(self):
+        from yandex_mcp.formatters.webmaster import format_webmaster_popular_queries_markdown
+        assert callable(format_webmaster_popular_queries_markdown)
