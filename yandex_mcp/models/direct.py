@@ -214,6 +214,10 @@ class UpdateCampaignInput(BaseModel):
         default=None,
         description="Excluded placement sites/apps for РСЯ (e.g. ['site.com', 'app.id'])"
     )
+    attribution_model: Optional[str] = Field(
+        default=None,
+        description="Attribution model: FC, LC, LSC, LYDC, FCCD, LSCCD, LYDCCD, AUTO"
+    )
 
 
 class NetworkStrategyType(str, Enum):

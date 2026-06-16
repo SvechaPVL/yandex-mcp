@@ -115,7 +115,7 @@ Add to your MCP client settings:
 |------|-------------|
 | `direct_get_campaigns` | Get campaigns with status, strategy, and budget info |
 | `direct_create_campaign` | Create a new campaign (search, network, or both) |
-| `direct_update_campaign` | Update campaign settings (strategy, budget, schedule, regions) |
+| `direct_update_campaign` | Update campaign settings (strategy, budget, schedule, regions, attribution model) |
 | `direct_suspend_campaigns` | Pause campaigns |
 | `direct_resume_campaigns` | Resume paused campaigns |
 | `direct_archive_campaigns` | Archive campaigns |

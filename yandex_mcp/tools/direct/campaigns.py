@@ -161,6 +161,12 @@ def register(mcp: FastMCP) -> None:
             if params.excluded_sites is not None:
                 campaign_update["ExcludedSites"] = {"Items": params.excluded_sites}
 
+            # Handle attribution model
+            if params.attribution_model is not None:
+                if "TextCampaign" not in campaign_update:
+                    campaign_update["TextCampaign"] = {}
+                campaign_update["TextCampaign"]["AttributionModel"] = params.attribution_model
+
             # Handle bidding strategy update
             if params.bidding_strategy_type is not None:
                 strategy_type = params.bidding_strategy_type.value
