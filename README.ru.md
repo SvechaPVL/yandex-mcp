@@ -110,6 +110,8 @@ YANDEX_TOKEN=ваш_oauth_токен
 | `YANDEX_METRIKA_TOKEN` | Нет | Отдельный токен для Metrika API |
 | `YANDEX_CLIENT_LOGIN` | Нет | Логин клиента для агентских аккаунтов |
 | `YANDEX_USE_SANDBOX` | Нет | `true` для использования песочницы |
+| `YANDEX_WORDSTAT_API_KEY` | Для Wordstat | API-ключ сервисного аккаунта Yandex Cloud (Search API v2); старый OAuth Wordstat API отключён |
+| `YANDEX_CLOUD_FOLDER_ID` | Нет | ID каталога Yandex Cloud для запросов Search API v2 (опционально) |
 
 ## Инструменты (132)
 
@@ -383,7 +385,7 @@ YANDEX_TOKEN=ваш_oauth_токен
 | `wordstat_dynamics` | Получить динамику частотности по времени (день/неделя/месяц) |
 | `wordstat_regions` | Получить региональное распределение запросов |
 | `wordstat_regions_tree` | Получить полное дерево регионов с ID |
-| `wordstat_user_info` | Получить квоту и лимиты API |
+| `wordstat_user_info` | Устарел: v1-эндпоинт квот удалён; возвращает ссылку на консоль Yandex Cloud |
 
 ### Yandex Webmaster (4 инструмента)
 

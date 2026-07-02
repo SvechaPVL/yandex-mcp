@@ -21,6 +21,11 @@ class YandexAPIClient:
         self.direct_token = os.environ.get("YANDEX_DIRECT_TOKEN", "")
         self.metrika_token = os.environ.get("YANDEX_METRIKA_TOKEN", "")
         self.webmaster_token = os.environ.get("YANDEX_WEBMASTER_TOKEN", "")
+        # Wordstat lives on Yandex Cloud Search API v2 and uses a service-account
+        # Api-Key (NOT OAuth). Folder ID is optional: keys bound to a service
+        # account in a folder work without it.
+        self.wordstat_api_key = os.environ.get("YANDEX_WORDSTAT_API_KEY", "")
+        self.cloud_folder_id = os.environ.get("YANDEX_CLOUD_FOLDER_ID", "")
         # Allow single token for both services
         self.unified_token = os.environ.get("YANDEX_TOKEN", "")
         self.client_login = os.environ.get("YANDEX_CLIENT_LOGIN", "")
@@ -34,9 +39,9 @@ class YandexAPIClient:
         """Get token for Metrika API."""
         return self.metrika_token or self.unified_token
 
-    def _get_wordstat_token(self) -> str:
-        """Get token for Wordstat API."""
-        return self.direct_token or self.unified_token
+    def _get_wordstat_api_key(self) -> str:
+        """Get the Yandex Cloud Api-Key for the Wordstat (Search API v2)."""
+        return self.wordstat_api_key
 
     def _get_webmaster_token(self) -> str:
         """Get token for Webmaster API."""
@@ -130,23 +135,35 @@ class YandexAPIClient:
         endpoint: str,
         data: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
-        """Make a request to Yandex Wordstat API."""
-        token = self._get_wordstat_token()
-        if not token:
+        """Make a request to Wordstat via Yandex Cloud Search API v2.
+
+        ``endpoint`` is the path after ``/v2/wordstat``, e.g. ``/topRequests``.
+        Auth is an ``Api-Key`` header (service-account key), not OAuth.
+        ``folderId`` is added to the body when YANDEX_CLOUD_FOLDER_ID is set;
+        keys bound to a service account inside a folder work without it.
+        """
+        api_key = self._get_wordstat_api_key()
+        if not api_key:
             raise ValueError(
-                "Yandex Wordstat API token not configured. "
-                "Set YANDEX_DIRECT_TOKEN or YANDEX_TOKEN environment variable."
+                "Yandex Wordstat API key not configured. "
+                "Set YANDEX_WORDSTAT_API_KEY environment variable "
+                "(Yandex Cloud service-account API key with Search API access). "
+                "The old OAuth-based api.wordstat.yandex.net is decommissioned."
             )
 
         from .config import YANDEX_WORDSTAT_API_URL
         url = f"{YANDEX_WORDSTAT_API_URL}{endpoint}"
         headers = {
-            "Authorization": f"Bearer {token}",
+            "Authorization": f"Api-Key {api_key}",
             "Content-Type": "application/json;charset=utf-8",
         }
 
+        payload: Dict[str, Any] = dict(data or {})
+        if self.cloud_folder_id and "folderId" not in payload:
+            payload["folderId"] = self.cloud_folder_id
+
         async with httpx.AsyncClient(timeout=DEFAULT_TIMEOUT) as client:
-            response = await client.post(url, json=data or {}, headers=headers)
+            response = await client.post(url, json=payload, headers=headers)
             response.raise_for_status()
             return response.json()
 

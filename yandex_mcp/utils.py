@@ -13,6 +13,10 @@ def handle_api_error(e: Exception) -> str:
             error_detail = error_body.get("error", {}).get("error_detail", "")
             if error_msg:
                 return f"API Error ({status}): {error_msg}. {error_detail}".strip()
+            # Yandex Cloud (Search API v2 / Wordstat) error shape: {"code", "message"}
+            cloud_msg = error_body.get("message", "")
+            if cloud_msg:
+                return f"API Error ({status}): {cloud_msg}"
         except Exception:
             pass
 

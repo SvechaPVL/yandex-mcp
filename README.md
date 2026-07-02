@@ -110,6 +110,8 @@ Add to your MCP client settings:
 | `YANDEX_METRIKA_TOKEN` | No | Separate token for Metrika API |
 | `YANDEX_CLIENT_LOGIN` | No | Client login for agency accounts |
 | `YANDEX_USE_SANDBOX` | No | Set to `true` for sandbox API |
+| `YANDEX_WORDSTAT_API_KEY` | For Wordstat | Yandex Cloud service-account API key (Search API v2); the old OAuth Wordstat API is decommissioned |
+| `YANDEX_CLOUD_FOLDER_ID` | No | Yandex Cloud folder ID for Search API v2 requests (optional) |
 
 ## Tools (132)
 
@@ -383,7 +385,7 @@ Add to your MCP client settings:
 | `wordstat_dynamics` | Get query frequency dynamics over time (daily/weekly/monthly) |
 | `wordstat_regions` | Get regional distribution of search queries |
 | `wordstat_regions_tree` | Get full hierarchical regions tree with IDs |
-| `wordstat_user_info` | Get API quota and usage limits |
+| `wordstat_user_info` | Deprecated: v1 quota endpoint removed; returns pointer to Yandex Cloud console |
 
 ### Yandex Webmaster (4 tools)
 

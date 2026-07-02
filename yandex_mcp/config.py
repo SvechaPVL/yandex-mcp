@@ -10,6 +10,8 @@ YANDEX_METRIKA_API_URL = "https://api-metrika.yandex.net"
 DEFAULT_TIMEOUT = 30.0
 REPORT_TIMEOUT = 120.0
 
-YANDEX_WORDSTAT_API_URL = "https://api.wordstat.yandex.net"
+# Wordstat moved to Yandex Cloud Search API v2 (the old api.wordstat.yandex.net
+# host was decommissioned). Auth: "Authorization: Api-Key <key>" header.
+YANDEX_WORDSTAT_API_URL = "https://searchapi.api.cloud.yandex.net/v2/wordstat"
 
 YANDEX_WEBMASTER_API_URL = "https://api.webmaster.yandex.net/v4"
