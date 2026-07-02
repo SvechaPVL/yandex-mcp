@@ -170,13 +170,20 @@ class YandexAPIClient:
     async def webmaster_request(
         self,
         endpoint: str,
+        method: str = "GET",
         params: Optional[Dict[str, Any]] = None,
+        json_body: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
-        """Make a GET request to Yandex Webmaster API v4.
+        """Make a request to Yandex Webmaster API v4.
 
         ``endpoint`` is the path after the API version, e.g.
         ``/user/{user_id}/hosts/``. List values in ``params`` are encoded as
         repeated query keys (required by the search-queries endpoints).
+        ``method`` is one of GET, POST, DELETE. ``json_body`` is sent as the
+        JSON request body for POST requests (e.g. adding a host or sitemap).
+
+        Responses with no body (204, or an empty 200) are normalized to
+        ``{"success": True}`` so callers always get a dict back.
         """
         token = self._get_webmaster_token()
         if not token:
@@ -190,8 +197,22 @@ class YandexAPIClient:
         headers = {"Authorization": f"OAuth {token}"}
 
         async with httpx.AsyncClient(timeout=DEFAULT_TIMEOUT) as client:
-            response = await client.get(url, params=params, headers=headers)
+            if method == "GET":
+                response = await client.get(url, params=params, headers=headers)
+            elif method == "POST":
+                response = await client.post(
+                    url, params=params, json=json_body, headers=headers
+                )
+            elif method == "DELETE":
+                response = await client.delete(url, params=params, headers=headers)
+            else:
+                raise ValueError(f"Unsupported HTTP method: {method}")
+
             response.raise_for_status()
+
+            if response.status_code == 204 or not response.content:
+                return {"success": True}
+
             return response.json()
 
     async def webmaster_user_id(self) -> int:

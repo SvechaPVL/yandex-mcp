@@ -53,3 +53,44 @@ def format_webmaster_popular_queries_markdown(data: Dict[str, Any]) -> str:
             f"| {num('AVG_CLICK_POSITION', 1)} |"
         )
     return "\n".join(lines)
+
+
+def format_webmaster_verification_markdown(data: Dict[str, Any]) -> str:
+    lines = ["# Webmaster Host Verification\n"]
+    lines.append(f"- **State**: {data.get('verification_state', 'N/A')}")
+    lines.append(f"- **Type**: {data.get('verification_type', 'N/A')}")
+    lines.append(f"- **UIN (confirmation code)**: `{data.get('verification_uin', 'N/A')}`")
+    if data.get("latest_verification_time"):
+        lines.append(f"- **Last checked**: {data['latest_verification_time']}")
+    fail_info = data.get("fail_info")
+    if fail_info:
+        lines.append(f"- **Failure reason**: {fail_info.get('reason', 'N/A')} - {fail_info.get('message', '')}")
+    applicable = data.get("applicable_verifiers", [])
+    if applicable:
+        lines.append(f"- **Applicable methods**: {', '.join(applicable)}")
+    return "\n".join(lines)
+
+
+def format_webmaster_sitemaps_markdown(data: Dict[str, Any]) -> str:
+    sitemaps = data.get("sitemaps", [])
+    if not sitemaps:
+        return "No user-added sitemaps found."
+    lines = [
+        f"# Webmaster User-Added Sitemaps (total: {data.get('count', len(sitemaps)):,})\n",
+        "| Sitemap ID | URL | Added |",
+        "| --- | --- | --- |",
+    ]
+    for s in sitemaps:
+        lines.append(
+            f"| `{s.get('sitemap_id', 'N/A')}` "
+            f"| {s.get('sitemap_url', 'N/A')} "
+            f"| {s.get('added_date', 'N/A')} |"
+        )
+    return "\n".join(lines)
+
+
+def format_webmaster_recrawl_quota_markdown(data: Dict[str, Any]) -> str:
+    lines = ["# Webmaster Recrawl Quota\n"]
+    lines.append(f"- **Daily quota**: {data.get('daily_quota', 'N/A')}")
+    lines.append(f"- **Remaining today**: {data.get('quota_remainder', 'N/A')}")
+    return "\n".join(lines)

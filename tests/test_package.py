@@ -173,6 +173,18 @@ EXPECTED_WEBMASTER_TOOLS = [
     "webmaster_get_hosts",
     "webmaster_get_host_summary",
     "webmaster_get_popular_queries",
+    # Host management (add / delete / verification)
+    "webmaster_add_host",
+    "webmaster_delete_host",
+    "webmaster_get_verification",
+    "webmaster_verify_host",
+    # User-added sitemaps
+    "webmaster_list_sitemaps",
+    "webmaster_add_sitemap",
+    "webmaster_delete_sitemap",
+    # Recrawl
+    "webmaster_recrawl_url",
+    "webmaster_recrawl_quota",
 ]
 
 
